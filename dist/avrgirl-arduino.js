@@ -697,7 +697,7 @@ class SerialPort extends EventEmitter {
 
   getPortToUse() {
     if (this.port) {
-      return new Promise(function (resolve, reject) {
+      return new Promise((resolve, reject) => {
         resolve(this.port)
       });
     } else {
