@@ -147,29 +147,6 @@ var injectDependencies = function(boards, Connection, protocols) {
     });
   };
 
-    /**
-   * Public method for flashing a hex file to the main program allocation of the Arduino
-   *
-   * @param {string} file - path to hex file for uploading
-   * @param {function} callback - function to run upon completion/error
-   */
-    AvrgirlArduino.prototype.flashonPort = function(file, port, callback) {
-      var _this = this;
-  
-      // validate board properties first
-      _this._validateBoard(function(error) {
-        if (error) { return callback(error); }
-  
-        // set up serialport connection
-        _this.connection._init(function(error) {
-          if (error) { return callback(error); }
-  
-          // upload file to board
-          _this.protocol._upload(file, callback);
-        });
-      });
-    };
-
   /**
    * Return a list of devices on serial ports. In addition to the output provided
    * by SerialPort.list, it adds a platform independent PID in _pid
@@ -740,38 +717,6 @@ class SerialPort extends EventEmitter {
       .catch(error => {callback(error)});
   }
 
-  openWithPort(callback, port) {
-    try {
-    this.port = serialPort;
-    if (!this.isOpen) return;
-      this.port.open({ baudRate: this.baudRate || 57600 });
-    this.writer = this.port.writable.getWriter()
-    this.reader = this.port.readable.getReader()
-
-    async () => {
-      this.emit('open');
-      this.isOpen = true;
-      callback(null);
-      while (this.port.readable.locked) {
-        try {
-          const { value, done } = await this.reader.read();
-          if (done) {
-            break;
-          }
-          this.emit('data', Buffer.from(value));
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    }
-
-
-    } catch(error) {
-      callback(error)
-    }
-   
-  }
-
   async close(callback) {
     try {
       await this.reader.releaseLock();
@@ -864,7 +809,7 @@ var Connection = function(options) {
 };
 
 Connection.prototype._init = function(callback) {
-  this._setUpSerial(this.port, function(error) {
+  this._setUpSerial(function(error) {
     return callback(error);
   });
 };
@@ -877,7 +822,7 @@ Connection.prototype._setUpSerial = function(port, callback) {
     baudRate: this.board.baud,
     autoOpen: false
   });
-  if (port) {
+  if (this.port) {
     this.serialPort.port = port;
   }
   this.serialPort.on('open', function() {
