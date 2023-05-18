@@ -702,7 +702,7 @@ class SerialPort extends EventEmitter {
         resolve(_this.port)
       });
     } else {
-      window.navigator.serial.requestPort(this.requestOptions)
+      return window.navigator.serial.requestPort(this.requestOptions)
     }
   }
 
