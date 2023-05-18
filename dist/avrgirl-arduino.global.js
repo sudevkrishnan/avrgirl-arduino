@@ -688,8 +688,9 @@ class SerialPort extends EventEmitter {
 
   getPortToUse() {
     if (this.port) {
+      const _this = this;
       return new Promise((resolve, reject) => {
-        resolve(this.port)
+        resolve(_this.port)
       });
     } else {
       window.navigator.serial.requestPort(this.requestOptions)
