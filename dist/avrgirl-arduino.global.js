@@ -808,13 +808,13 @@ Connection.prototype._init = function(callback) {
 /**
  * Create new serialport instance for the Arduino board, but do not immediately connect.
  */
-Connection.prototype._setUpSerial = function(port, callback) {
+Connection.prototype._setUpSerial = function(callback) {
   this.serialPort = new Serialport('', {
     baudRate: this.board.baud,
     autoOpen: false
   });
   if (this.port) {
-    this.serialPort.port = port;
+    this.serialPort.port = this.port;
   }
   this.serialPort.on('open', function() {
     //    _this.emit('connection:open');
